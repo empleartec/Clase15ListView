@@ -60,18 +60,25 @@ public class DisciplineAdapter extends BaseAdapter {
         } else {
             row = convertView;
             holder = (ViewHolder) row.getTag();
+            if (holder.task != null) {
+                holder.task.cancel(true);
+                holder.task = null;
+            }
         }
 
 
         Discipline dis = (Discipline) getItem(position);
 
-        new IconAsyncTask(ctx, holder).execute(dis.getLogoResId());
+        holder.icon.setVisibility(View.INVISIBLE);
+        holder.position = position;
+
+        holder.task = new IconAsyncTask(ctx, holder, position);
+        holder.task.execute(dis.getLogoResId());
 
         holder.title.setText(dis.getName());
         holder.subtitle.setText(ctx.getString(R.string.level) + dis.getLevel());
         holder.rightText.setText(dis.getSchedule());
 
-        holder.position = position;
         return row;
     }
 
@@ -81,5 +88,6 @@ public class DisciplineAdapter extends BaseAdapter {
         public TextView subtitle;
         public TextView rightText;
         public int position;
+        public IconAsyncTask task;
     }
 }
